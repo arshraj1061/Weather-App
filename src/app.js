@@ -5,6 +5,7 @@ const geocode = require('./utils/geocode')
 const forecast = require('./utils/forecast')
 
 const app = express()
+const port = process.env.PORT || 3000  //Set port to given by heroku or default is 3000
 
 // Define paths for Express config
 const publicDirectoryPath = path.join(__dirname, '../public')
@@ -63,18 +64,29 @@ app.get('/weather', (req, res) => {
             })
         }
     
-        forecast(Latitude , Longitude ,  (forecastError, {Weather_description, Temperature, Feels_like, Humidity } = {} ) => {
-            if(forecastError) {
+        forecast(Latitude , Longitude ,  (forecastError, {Weather_description, Temperature, feelslike, Humidity,lat,lon,localtime,
+                 timezone_id, wind_speed , wind_dir , pressure , precip , uv_index } = {} ) => {
+            
+                if(forecastError) {
               return  res.send({
                   error : forecastError
                 })
             }
                  res.send({
+                    lat : lat,
+                    lon : lon,
                     Location :  Location, 
+                    localtime : localtime,
+                    timezone_id : timezone_id,
                     Weather_Description : Weather_description,
                     Temperature : Temperature,
-                    Feels_Like : Feels_like,
-                    Humidity : Humidity          
+                    feelslike : feelslike,
+                    Humidity : Humidity,
+                    wind_speed : wind_speed,
+                    wind_dir : wind_dir,
+                    pressure : pressure,
+                    precip : precip,
+                    uv_index : uv_index
                  })
         })
     }) 
@@ -96,6 +108,6 @@ app.get('*', (req, res) => {
     })
 })
 
-app.listen(3000, () => {
-    console.log('Server is up on port 3000.')
+app.listen(port, () => {
+    console.log(`Server is up on port ${port}.`)
 })
